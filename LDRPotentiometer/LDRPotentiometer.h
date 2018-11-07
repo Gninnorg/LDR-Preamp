@@ -42,14 +42,15 @@ class LDRPotentiometer
 
 
   private:
-    long size            =  10000; // Value in Ohm
-    byte numberOfSteps   =     99;
-    byte type            =      1; // 1 = Logaritmic, 2 = Linear
-    long max_attenuation =    -60; // dB
+    long  size            =  10000; // Value in Ohm
+    byte  numberOfSteps   =     99;
+    byte  type            =      1; // 1 = Logaritmic, 2 = Linear
+    long  max_attenuation =    -60; // dB
 
-    byte minResSerie   =     50; // Value in Ohm
-    byte minResShunt   =     50; // Value in Ohm
-    long inputResAmp   = 100000; // Value in Ohm
+    byte  minResSerie     =     50; // Value in Ohm
+    byte  minResShunt     =     50; // Value in Ohm
+    float min_attenuation =  -0.01; // dB
+    long inputResAmp      = 100000; // Value in Ohm
 
 
     byte selectedStep;

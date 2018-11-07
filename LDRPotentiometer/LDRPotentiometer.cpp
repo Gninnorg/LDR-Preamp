@@ -16,9 +16,6 @@ LDRPotentiometer::LDRPotentiometer() {
 
 void LDRPotentiometer::setSize(long _size)
 {
-  /*
-    Set the total resistance value in ohm for your potentiometer. 
-  */
   size = _size;
 }
 
@@ -89,7 +86,7 @@ void LDRPotentiometer::calcResistorsAtStep(byte _step)
   if (type == 2) //Linear
   {
     selectedStep = _step;
-    stepsize = 0.9988 / numberOfSteps;
+    stepsize = calcInOutRatio(min_attenuation) / numberOfSteps;
     in_out = stepsize*selectedStep;
 
   }
@@ -98,7 +95,7 @@ void LDRPotentiometer::calcResistorsAtStep(byte _step)
   shuntAtStep = max(size * in_out, minResShunt);
 
   if (serieAtStep ==  minResSerie) {
-    shuntAtStep = serieAtStep / (1 - min(in_out,0.9988));
+    shuntAtStep = serieAtStep / (1 - min(in_out,calcInOutRatio(min_attenuation)));
   }
 
   if (shuntAtStep == minResShunt) {
