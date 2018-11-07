@@ -16,6 +16,9 @@ LDRPotentiometer::LDRPotentiometer() {
 
 void LDRPotentiometer::setSize(long _size)
 {
+  /*
+    Set the total resistance value in ohm for your potentiometer. 
+  */
   size = _size;
 }
 
