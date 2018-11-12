@@ -1,7 +1,8 @@
 /*
   LDR Calibration v1.0
 
-  Calibration of the test targets is done in approx. 746 seconds with precision within -0.5/+0.5 (and often better)
+  Calibration of the test targets is done in approx. 746 seconds with an average precision of the entire calculation (all steps) of approx. -0.25/+0.25%.
+  Attempted precision for individual steps is -0.5/+0.5% (for steps > 10K), -0.2%/+0.2% (for steps <= 10K and > 2.5K) and finally -0.1%/+0.1% (for steps < 2.5K). 
 */
 
 #include <Wire.h>
