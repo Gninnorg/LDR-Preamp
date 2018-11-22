@@ -1,0 +1,20 @@
+Possible to use the 2.5V voltage reference from the DAC?
+
+A Channel class could also be implemented but will it give too much clutter?
+As it is now the LDRStereoPotentiometer could easily be used to create a LDRBalancedPotentiometer...
+
+Maybe we could set an error code if the initialization of the DAC and ADC fails? This could be implemented as a private member with a getter method in the StereoPotentiometer class that can be used to check for error codes?
+
+The LDR class could update a private progress tracker member that could be access by the program that initialized a calibration
+
+Revisit the 5K boundary (check the first 10 bias steps to see possible values)
+// Adjust the bias if the target is smaller than what is possible with the current bias setting or if we are doing a precise calibration and the target differs with more than 5K from the maximum resistance of the currently set bias
+
+
+Revisit BinarySearch (seen instances where -1 is returned:
+The code was:
+return pos - 1; // return best matching higher value (which is found at pos - 1)
+Changed to:
+if (pos > 0) return pos - 1; // return best matching higher value (which is found at pos - 1)
+  else return pos;
+Why does it happen with original code??
