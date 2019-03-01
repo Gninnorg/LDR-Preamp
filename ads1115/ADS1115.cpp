@@ -30,10 +30,11 @@
     Default address: ADDRESS_GND
     Default PGA: PGA_6_144V
 /**************************************************************************/
-ADS1115::ADS1115(ads1115_I2C_address_t i2cAddress, ads1115_conf_pga_t config_pga)
+ADS1115::ADS1115(ads1115_I2C_address_t i2cAddress, ads1115_conf_pga_t config_pga, ads1115_conf_mode_t config_mode)
 {
    m_i2cAddress = i2cAddress;
    m_config_pga = config_pga;
+   m_config_mode = config_mode;
 }
 
 
@@ -43,6 +44,10 @@ ADS1115::ADS1115(ads1115_I2C_address_t i2cAddress, ads1115_conf_pga_t config_pga
 void ADS1115::begin()
 {
   Wire.begin();
+  if (m_config_mode == DEV_MODE_CONTIN) {
+    // If device mode is continuous reading ask ADS1115 to start reading
+    triggerContReading();
+  }
 }
 
 /**************************************************************************
@@ -122,12 +127,14 @@ int16_t ADS1115::getCountA2A3()
 /**************************************************************************/
 int16_t ADS1115::getConversion()
 {
-  triggerConversion();
 
-  if(pollConversion((uint8_t)1000)) {
-    return getLastConversionResults();
+  if (m_config_mode == DEV_MODE_SINGLE) {
+    triggerConversion();
+    if(pollConversion((uint8_t)10000)) {
+      return getLastConversionResults();
+    }
   } else {
-    return 0;
+    return getLastConversionResults();
   }
 }
 
@@ -178,6 +185,16 @@ void ADS1115::triggerConversion()
 }
 
 /**************************************************************************
+    Trigger til ADC1115 to do a continuous reading
+/**************************************************************************/
+void ADS1115::triggerContReading()
+{
+  uint16_t config = getConfiguration();
+  config |= OS_SET_NO_EFFECT;
+  writeRegister(REG_CONFIG, config);
+}
+
+/**************************************************************************
     Check if the ADC1115 has finished the conversion
 /**************************************************************************/
 boolean ADS1115::isConversionReady()
@@ -219,7 +236,19 @@ void ADS1115::setDataRate(ads1115_conf_dr_t config_dr)
 /**************************************************************************/
 void ADS1115::setMultiplexer(ads1115_conf_mux_t config_mux)
 {
-  m_config_mux = config_mux;
+
+  if (m_config_mux != config_mux) {
+    // Only change mux if setting has changed
+    m_config_mux = config_mux;
+
+    if (m_config_mode == DEV_MODE_CONTIN) {
+      // If ADS1115 is continuous mode write the changed mux to the device
+      triggerContReading();
+      // Wait a bit to be sure we are not reading a conversion on a different mux
+      delay(300);
+    }
+  }
+
 }
 
 /**************************************************************************
@@ -316,7 +345,7 @@ float ADS1115::getSerieForAttenuation(double attenuation, uint16_t pot_size )
 /**************************************************************************/
 void ADS1115::showConfigRegister()
 {
-    #ifdef ADS1115_SERIAL_DEBUG
+    //#ifdef ADS1115_SERIAL_DEBUG
     uint16_t configRegister = getConfiguration();
     Serial.print("Configuration file is:");
     Serial.println(configRegister,BIN);
@@ -324,7 +353,7 @@ void ADS1115::showConfigRegister()
     configRegister = readRegister(REG_CONFIG);
     Serial.print("Device configuration file is:");
     Serial.println(configRegister,BIN);
-    #endif
+    //#endif
 }
 
 /**************************************************************************/

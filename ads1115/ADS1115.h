@@ -147,8 +147,8 @@ protected:
    ads1115_conf_os_t        m_config_os     = OS_SET_NO_EFFECT;
    ads1115_conf_mux_t       m_config_mux    = MUX_SINGLE_0;
    ads1115_conf_pga_t       m_config_pga;
-   ads1115_conf_mode_t      m_config_mode   = DEV_MODE_SINGLE;
-   ads1115_conf_dr_t        m_config_dr     = DR_8SPS;
+   ads1115_conf_mode_t      m_config_mode;
+   ads1115_conf_dr_t        m_config_dr     = DR_250SPS;
    ads1115_conf_comp_mode_t m_config_cmode  = CMODE_TRAD;
    ads1115_conf_comp_pol_t  m_config_cpol   = CPOL_ACTIVE_LOW;
    ads1115_conf_comp_lat_t  m_config_clat   = CLAT_NONLAT;
@@ -171,7 +171,11 @@ protected:
   static const ads1115_conf_pga_t GAIN_0_512V = PGA_0_512V;
   static const ads1115_conf_pga_t GAIN_0_256V = PGA_0_256V;
 
-  ADS1115(ads1115_I2C_address_t i2cAddress = ADDRESS_DEFAULT, ads1115_conf_pga_t config_pga = PGA_6_144V);
+  // Device modes for global use
+  static const ads1115_conf_mode_t SINGLESHOT = DEV_MODE_SINGLE;
+  static const ads1115_conf_mode_t CONTINUES  = DEV_MODE_CONTIN;
+
+  ADS1115(ads1115_I2C_address_t i2cAddress = ADDRESS_DEFAULT, ads1115_conf_pga_t config_pga = PGA_6_144V, ads1115_conf_mode_t config_mode = DEV_MODE_SINGLE);
 
   /* Main functions */
   void      begin(void);
@@ -205,4 +209,5 @@ protected:
   boolean   isConversionReady();
   int16_t   getLastConversionResults();
   uint16_t  getConfiguration();
+  void      triggerContReading();
 };
